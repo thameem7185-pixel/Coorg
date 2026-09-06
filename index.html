@@ -73,7 +73,7 @@
   .icon-btn:hover, .icon-btn:focus-visible{background:rgba(237,230,214,0.18);}
   .icon-btn:active{transform:scale(0.92);}
   .icon-btn svg{width:18px;height:18px;}
-  .icon-btn:focus-visible, .nav-btn:focus-visible, .dot:focus-visible{
+  .icon-btn:focus-visible{
     outline:2px solid var(--gold); outline-offset:2px;
   }
 
@@ -300,39 +300,6 @@
   .chip .chip-desc{font-size:0.83rem; color:var(--mist); margin:0; line-height:1.5;}
   @media (max-width:680px){ .chip-grid{grid-template-columns:1fr;} }
 
-  /* ---------- Bottom nav ---------- */
-  footer.bar{
-    position:absolute; bottom:0; left:0; right:0; z-index:30;
-    padding:6px 20px calc(6px + env(safe-area-inset-bottom));
-    display:flex; align-items:center; justify-content:center; gap:14px;
-    background:linear-gradient(0deg, rgba(18,32,26,0.85), rgba(18,32,26,0));
-  }
-  .nav-btn{
-    background:none; border:none; color:var(--cream);
-    width:22px;height:22px; border-radius:0;
-    display:flex;align-items:center;justify-content:center; cursor:pointer;
-    font-size:1rem; line-height:1;
-    opacity:0.75;
-    transition:opacity .2s ease, transform .15s cubic-bezier(.22,1,.36,1);
-    will-change:transform;
-    touch-action:manipulation;
-    flex-shrink:0;
-    padding:0;
-  }
-  .nav-btn:hover, .nav-btn:focus-visible{opacity:1;}
-  .nav-btn:active{transform:scale(0.9);}
-  .dots{display:flex; gap:5px;}
-  .dot{
-    width:5px;height:5px;border-radius:50%;
-    background:rgba(237,230,214,0.3); cursor:pointer;
-    transition:background .25s ease, width .25s cubic-bezier(.22,1,.36,1);
-    padding:8px 3px;
-    background-clip:content-box;
-    box-sizing:content-box;
-    touch-action:manipulation;
-  }
-  .dot.active{background:var(--gold); width:14px; border-radius:4px;}
-
   .slide-count{
     position:absolute; bottom:26px; right:28px;
     font-family:'Fraunces',serif; color:var(--mist); font-size:0.85rem; z-index:30;
@@ -348,7 +315,6 @@
 
   @media (prefers-reduced-motion: reduce){
     .slide{transition:opacity .25s linear !important; transform:none !important;}
-    .dot{transition:none;}
   }
 </style>
 </head>
@@ -541,27 +507,14 @@
 
   <div class="slide-count" id="slideCount">01 / 09</div>
 
-  <footer class="bar">
-    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button>
-    <div class="dots" id="dots"></div>
-    <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
-  </footer>
+
 </div>
 
 <script>
 (function(){
   const slides = Array.from(document.querySelectorAll('.slide'));
-  const dotsWrap = document.getElementById('dots');
   const slideCount = document.getElementById('slideCount');
   let current = 0;
-
-  slides.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.addEventListener('click', () => goTo(i));
-    dotsWrap.appendChild(d);
-  });
-  const dots = Array.from(dotsWrap.children);
 
   function pad(n){ return n < 10 ? '0' + n : '' + n; }
 
@@ -637,7 +590,6 @@
         pauseSlideVideo(s);
       }
     });
-    dots.forEach((d, i) => d.classList.toggle('active', i === current));
     slideCount.textContent = pad(current + 1) + ' / ' + pad(slides.length);
   }
 
@@ -647,9 +599,6 @@
     current = i;
     updateUI(prevIndex);
   }
-
-  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
-  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
 
   document.addEventListener('keydown', (e) => {
     if(e.key === 'ArrowRight') goTo(current + 1);
