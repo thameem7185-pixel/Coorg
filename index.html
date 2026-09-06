@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Coorg — The Scotland of India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#EDE6D6;
+    --cream-soft:#E4DBC6;
+    --forest:#1F3527;
+    --forest-deep:#12201A;
+    --coffee:#4A2E1F;
+    --mist:#A8B8A0;
+    --gold:#C08A3E;
+    --max-w:920px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--forest-deep);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    height:100dvh;
+  }
+
+  .app{
+    position:relative;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  header.bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:calc(16px + env(safe-area-inset-top)) 28px 16px;
+    background:linear-gradient(180deg, rgba(18,32,26,0.88), rgba(18,32,26,0));
+    position:absolute;
+    top:0; left:0; right:0;
+    z-index:30;
+    pointer-events:none;
+  }
+  .brand{display:flex; flex-direction:column; gap:2px;}
+  .brand-top{display:flex; align-items:baseline; gap:9px;}
+  .brand .mark{width:9px;height:9px;border-radius:50%;background:var(--gold);display:inline-block;}
+  .brand-top span{font-family:'Fraunces',serif; font-size:1.05rem; letter-spacing:0.02em; color:var(--cream);}
+  .brand .meta{color:var(--mist); font-size:0.7rem; letter-spacing:0.02em; padding-left:18px;}
+
+  .header-actions{pointer-events:auto; display:flex; align-items:center; gap:10px;}
+  .icon-btn{
+    background:rgba(237,230,214,0.08);
+    border:1px solid rgba(237,230,214,0.25);
+    color:var(--cream);
+    width:46px;height:46px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s cubic-bezier(.22,1,.36,1);
+    touch-action:manipulation;
+  }
+  .icon-btn:hover, .icon-btn:focus-visible{background:rgba(237,230,214,0.18);}
+  .icon-btn:active{transform:scale(0.92);}
+  .icon-btn svg{width:18px;height:18px;}
+  .icon-btn:focus-visible, .nav-btn:focus-visible, .dot:focus-visible{
+    outline:2px solid var(--gold); outline-offset:2px;
+  }
+
+  /* ---------- Slide stage ---------- */
+  .stage{
+    flex:1;
+    position:relative;
+    perspective:1200px;
+  }
+  .slide{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:120px 8vw 90px;
+    opacity:0;
+    visibility:hidden;
+    transform:translate3d(24px,0,0);
+    transition:opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1);
+    will-change:opacity, transform;
+    backface-visibility:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    touch-action:pan-y;
+  }
+  .slide.hero, .slide.thanks{ align-items:center; }
+  .slide.prev{transform:translate3d(-24px,0,0);}
+  .slide.active{
+    opacity:1;
+    visibility:visible;
+    transform:translate3d(0,0,0);
+    z-index:2;
+  }
+
+  /* ---------- Background layers (video OR illustrated landscape) ---------- */
+  .bg-video, .landscape-bg{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    z-index:0;
+    background:var(--forest-deep);
+  }
+  .bg-video video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    pointer-events:none;
+  }
+  .landscape-bg svg{width:100%;height:100%;display:block;}
+  .bg-overlay{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:linear-gradient(180deg, rgba(18,32,26,0.5) 0%, rgba(18,32,26,0.68) 55%, rgba(18,32,26,0.9) 100%);
+  }
+
+  .slide-inner{
+    max-width:var(--max-w);
+    width:100%;
+    position:relative;
+    z-index:2;
+    margin-top:auto;
+    margin-bottom:auto;
+  }
+  /* Slides that carry a tap-to-play video below their text: the video
+     stretches down to the bottom of the slide instead of leaving a
+     dead black gap under a fixed-height box. */
+  .slide-inner:has(.fill-video){
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    margin-top:0;
+    margin-bottom:0;
+  }
+  .yt-embed.fill-video{
+    flex:1 1 auto;
+    aspect-ratio:auto;
+    min-height:200px;
+  }
+  .eyebrow{
+    color:var(--gold);
+    font-size:0.82rem;
+    margin:0 0 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:26px;height:1px;background:var(--gold); display:inline-block;}
+  h1.slide-title{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(2.1rem, 4.2vw, 3.4rem);
+    line-height:1.08;
+    margin:0 0 22px;
+    color:var(--cream);
+    max-width:16ch;
+  }
+  .slide-body p{
+    font-size:1.02rem;
+    line-height:1.75;
+    color:var(--cream-soft);
+    max-width:62ch;
+    margin:0 0 16px;
+  }
+  .slide-body p:last-child{margin-bottom:0;}
+
+  .slide.hero .slide-inner{text-align:center; max-width:760px; margin:0 auto;}
+  .slide.hero h1.slide-title{max-width:none; font-size:clamp(2.8rem, 7vw, 5.2rem);}
+  .slide.hero .eyebrow{justify-content:center;}
+  .slide.hero .eyebrow::before{display:none;}
+  .slide.hero .subtitle{
+    font-family:'Fraunces',serif; font-style:italic; font-weight:400;
+    color:var(--mist); font-size:1.25rem; margin-top:8px;
+  }
+  .slide.hero .chapter-tag{
+    display:inline-block;
+    margin-top:22px;
+    font-size:0.78rem;
+    color:var(--cream-soft);
+    border:1px solid rgba(237,230,214,0.3);
+    border-radius:999px;
+    padding:7px 16px;
+    background:rgba(18,32,26,0.4);
+  }
+
+  /* thanks slide */
+  .slide.thanks .slide-inner{text-align:center; max-width:640px; margin:0 auto;}
+  .thanks-mark{
+    width:46px;height:46px;border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 22px;
+    color:var(--gold);
+    font-family:'Fraunces',serif;
+    font-size:1.3rem;
+  }
+  .thanks-name{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem;
+    color:var(--gold);
+    margin-top:26px;
+  }
+  .thanks-sub{
+    color:var(--mist);
+    font-size:0.85rem;
+    margin-top:6px;
+  }
+
+  /* ---------- Tap-to-play video, sits under the text, reached by scrolling the slide ---------- */
+  .yt-embed{
+    position:relative;
+    margin-top:22px;
+    width:100%;
+    max-width:62ch;
+    aspect-ratio:16/9;
+    border-radius:14px;
+    overflow:hidden;
+    background:#000;
+    border:1px solid rgba(237,230,214,0.18);
+    touch-action:manipulation;
+  }
+  .yt-embed img{
+    width:100%;height:100%;object-fit:cover;display:block;opacity:0.85;
+  }
+  .yt-embed iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:0;
+  }
+  .yt-play{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(18,32,26,0.25);
+    cursor:pointer;
+    border:none; padding:0;
+  }
+  .yt-play .yt-play-circle{
+    width:64px;height:64px;border-radius:50%;
+    background:rgba(18,32,26,0.7);
+    border:1px solid rgba(237,230,214,0.5);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s cubic-bezier(.22,1,.36,1);
+  }
+  .yt-play:active .yt-play-circle{transform:scale(0.92);}
+  .yt-play svg{width:22px;height:22px;fill:var(--cream); margin-left:3px;}
+  .yt-caption{font-size:0.78rem; color:var(--mist); margin-top:8px;}
+
+  .video-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(18,32,26,0.55);
+    border:1px solid rgba(237,230,214,0.25);
+    padding:6px 12px 6px 8px;
+    border-radius:999px;
+    font-size:0.74rem;
+    color:var(--mist);
+    margin-bottom:18px;
+  }
+  .video-badge .dot-live{
+    width:7px;height:7px;border-radius:50%;background:#e2543a;
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(226,84,58,0.55);}
+    70%{box-shadow:0 0 0 8px rgba(226,84,58,0);}
+    100%{box-shadow:0 0 0 0 rgba(226,84,58,0);}
+  }
+
+  .chip-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:12px;
+    margin-top:6px;
+    max-width:64ch;
+  }
+  .chip{
+    background:rgba(18,32,26,0.42);
+    border:1px solid rgba(237,230,214,0.18);
+    border-radius:12px;
+    padding:12px 14px;
+    backdrop-filter:none;
+  }
+  .chip .chip-title{font-family:'Fraunces',serif; font-size:0.98rem; color:var(--cream); margin:0 0 4px;}
+  .chip .chip-desc{font-size:0.83rem; color:var(--mist); margin:0; line-height:1.5;}
+  @media (max-width:680px){ .chip-grid{grid-template-columns:1fr;} }
+
+  /* ---------- Bottom nav ---------- */
+  footer.bar{
+    position:absolute; bottom:0; left:0; right:0; z-index:30;
+    padding:20px 28px calc(26px + env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    background:linear-gradient(0deg, rgba(18,32,26,0.85), rgba(18,32,26,0));
+  }
+  .nav-btn{
+    background:none; border:1px solid rgba(237,230,214,0.35); color:var(--cream);
+    width:50px;height:50px; border-radius:50%;
+    display:flex;align-items:center;justify-content:center; cursor:pointer;
+    font-size:1.25rem;
+    transition:background .2s ease, transform .15s cubic-bezier(.22,1,.36,1);
+    will-change:transform;
+    touch-action:manipulation;
+    flex-shrink:0;
+  }
+  .nav-btn:hover, .nav-btn:focus-visible{background:rgba(237,230,214,0.14); transform:scale(1.06);}
+  .nav-btn:active{transform:scale(0.94);}
+  .dots{display:flex; gap:6px;}
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(237,230,214,0.3); cursor:pointer;
+    transition:background .25s ease, width .25s cubic-bezier(.22,1,.36,1);
+    padding:14px 5px;
+    background-clip:content-box;
+    box-sizing:content-box;
+    touch-action:manipulation;
+  }
+  .dot.active{background:var(--gold); width:22px; border-radius:5px;}
+
+  .slide-count{
+    position:absolute; bottom:26px; right:28px;
+    font-family:'Fraunces',serif; color:var(--mist); font-size:0.85rem; z-index:30;
+  }
+
+  @media (max-width:600px){
+    header.bar{padding:14px 16px;}
+    .brand-top span{font-size:0.92rem;}
+    .brand .meta{font-size:0.62rem;}
+    .slide{padding:104px 6vw 84px;}
+    footer.bar{gap:14px;}
+    .slide-count{display:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .slide{transition:opacity .25s linear !important; transform:none !important;}
+    .dot{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <header class="bar">
+    <div class="brand">
+      <div class="brand-top"><span class="mark"></span><span>Coorg</span></div>
+      <div class="meta">First Flight · Prose · Chapter 5 · Glimpses of India — Part II: Coorg</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fsIcon">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+
+    <!-- 0: Title -->
+    <section class="slide hero active">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <p class="eyebrow">NCERT Class 10 · First Flight</p>
+        <h1 class="slide-title">Coorg</h1>
+        <p class="subtitle">the Scotland of India</p>
+        <span class="chapter-tag">Chapter 5 — Glimpses of India, Part II</span>
+      </div>
+    </section>
+
+    <!-- 1: Geography -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="num-tag" style="font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);border:1px solid rgba(192,138,62,.5);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;">01</div>
+        <p class="eyebrow">Where earth meets the mist</p>
+        <h1 class="slide-title">A hill country in the Western Ghats</h1>
+        <div class="slide-body">
+          <p>Coorg — known today by its older name, Kodagu — lies folded into the Western Ghats of Karnataka. Its rolling hills, evergreen forest cover and cool, damp air set it apart from the plains around it, giving the district a climate closer to a hill station than to tropical India.</p>
+          <p>At Talakaveri, on the slopes of the Brahmagiri range, a modest spring marks the birthplace of the river Cauvery, which then winds its way across southern India toward the Bay of Bengal — a quiet beginning for a river central to the life of the region.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2: History -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="num-tag" style="font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);border:1px solid rgba(192,138,62,.5);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;">02</div>
+        <p class="eyebrow">A land shaped by history</p>
+        <h1 class="slide-title">Ruled by its own rajas, tested by empires</h1>
+        <div class="slide-body">
+          <p>For generations before independence, Coorg was governed by its own line of chieftains, the Haleri Rajas, rather than by any distant court. Its steep terrain and thick forest cover made the kingdom hard to reach and harder still to conquer, and it held its ground against Tipu Sultan's advancing forces in the late eighteenth century.</p>
+          <p>Under British administration in the nineteenth century, coffee was planted across its hillsides for the first time, setting the district on a new economic path that still shapes it today. Coorg entered independent India as a separate state before being merged into Karnataka in 1956.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3: Tourist Places & Adventure (background video) -->
+    <section class="slide" data-video-src="https://assets.mixkit.co/videos/50847/50847-360.mp4">
+      <div class="bg-video"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="video-badge"><span class="dot-live"></span> footage from the hills</div>
+        <p class="eyebrow">Places to wander, trails to chase</p>
+        <h1 class="slide-title">Tourist trails and the adventure between them</h1>
+        <div class="slide-body">
+          <p>Coorg rewards slow travel. Its landmarks are spread across misty ridgelines and river valleys, so a visit here is as much about the road between places as the places themselves.</p>
+        </div>
+        <div class="chip-grid">
+          <div class="chip"><p class="chip-title">Talakaveri</p><p class="chip-desc">The spring source of the river Cauvery, high on the Brahmagiri hills.</p></div>
+          <div class="chip"><p class="chip-title">Abbey Falls</p><p class="chip-desc">A waterfall dropping through coffee and cardamom plantations near Madikeri.</p></div>
+          <div class="chip"><p class="chip-title">Raja's Seat</p><p class="chip-desc">A garden viewpoint once favoured by Coorg's kings to watch the sunset.</p></div>
+          <div class="chip"><p class="chip-title">Namdroling Golden Temple</p><p class="chip-desc">A Tibetan Buddhist monastery at Bylakuppe, built by a resettled community.</p></div>
+          <div class="chip"><p class="chip-title">Dubare Elephant Camp</p><p class="chip-desc">A riverside camp on the Kaveri where forest elephants are trained and bathed.</p></div>
+          <div class="chip"><p class="chip-title">Mandalpatti &amp; Tadiandamol</p><p class="chip-desc">A jeep-track viewpoint and Coorg's highest peak, both popular treks.</p></div>
+        </div>
+        <div class="yt-embed fill-video" data-video-src="assets/coorg-trails.mp4">
+          <button class="yt-play" aria-label="Play video" type="button">
+            <span class="yt-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <p class="yt-caption">Tap to play — scroll down inside this slide to reach it.</p>
+      </div>
+    </section>
+
+    <!-- 4: The People -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="num-tag" style="font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);border:1px solid rgba(192,138,62,.5);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;">03</div>
+        <p class="eyebrow">The people of the hills</p>
+        <h1 class="slide-title">A warrior spirit, quietly carried</h1>
+        <div class="slide-body">
+          <p>The Kodavas, the original people of this land, are widely regarded as one of India's martial communities, with their own dress, language — Kodava Takk — and customs found nowhere else in the country. Coorg is often described as the one part of India where households have traditionally been allowed to keep firearms without a license.</p>
+          <p>Few districts of its size have sent so many of their sons into the highest ranks of the armed forces, among them Field Marshal K. M. Cariappa and General K. S. Thimayya, both of whom led the Indian Army. That same community keeps its own festival calendar — Kaveri Sankramana for the river's birth, and Kailpodh, a day set aside to clean and honour the weapons every Kodava household keeps.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5: Wildlife (background video) -->
+    <section class="slide" data-video-src="https://assets.mixkit.co/videos/7086/7086-360.mp4">
+      <div class="bg-video"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="video-badge"><span class="dot-live"></span> a tiger, sighted on a Nagarhole safari road</div>
+        <p class="eyebrow">An emerald wilderness</p>
+        <h1 class="slide-title">Forests that shelter more than they show</h1>
+        <div class="slide-body">
+          <p>Coorg lies within the Western Ghats, one of the world's recognised biodiversity hotspots. Within its protected forests — the Nagarhole National Park and the Brahmagiri Wildlife Sanctuary chief among them — tigers, spotted deer, elephants and gaur move through cover so dense that a sighting still feels like an event.</p>
+          <p>Early-morning safaris along the park's quiet roads are the best chance of seeing this life up close: deer grazing in forest clearings, elephant herds crossing at dawn, and, on rarer mornings, a tiger walking the very track your jeep is on.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6: Coffee -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="num-tag" style="font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);border:1px solid rgba(192,138,62,.5);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;">04</div>
+        <p class="eyebrow">The aroma of the hills</p>
+        <h1 class="slide-title">Coffee, pepper and the scent of spring</h1>
+        <div class="slide-body">
+          <p>Introduced during British rule, coffee has become the crop most associated with Coorg, grown in the shade of silver oak and orange trees across the district's slopes. Pepper vines climb the same trees, and cardamom plantations fill the valleys in between — a landscape built almost entirely on fragrance.</p>
+          <p>Each spring, coffee blossoms briefly cover the estates in white, and for a few days the entire district smells of it. Coorg remains one of India's principal coffee-growing regions, and the plantations are as much a part of its identity as its rivers or its hills.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6b: Coffee Production -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <p class="eyebrow">How the harvest becomes the coffee</p>
+        <h1 class="slide-title">From flowering estate to processed bean</h1>
+        <div class="slide-body">
+          <p>Coffee in Coorg is grown under a canopy of taller shade trees, which keep the plants cool and protect the soil — a traditional method that also lets pepper vines and cardamom share the same land. Flowering happens after the first pre-monsoon showers, usually in March, when entire hillsides turn white for a few days.</p>
+          <p>Cherries are hand-picked once ripe, typically between November and February, then either dry-processed in the sun or wet-processed by pulping and fermenting before drying. The dried beans are hulled, graded and sent on for roasting — a slow, largely manual chain of work that still shapes the rhythm of the district's plantation communities.</p>
+        </div>
+        <div class="yt-embed fill-video" data-video-src="assets/bean-to-brew.mp4">
+          <button class="yt-play" aria-label="Play video" type="button">
+            <span class="yt-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <p class="yt-caption">Tap to play — scroll down inside this slide to reach it.</p>
+      </div>
+    </section>
+
+    <!-- 7: Soul -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="num-tag" style="font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);border:1px solid rgba(192,138,62,.5);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;">05</div>
+        <p class="eyebrow">In closing</p>
+        <h1 class="slide-title">The soul of Coorg</h1>
+        <div class="slide-body">
+          <p>What stays with a visitor to Coorg is rarely one single sight. It is the mist settling over the hills at dawn, a river beginning quietly at a mountain spring, a community that has kept its own customs intact while sending more than its share of soldiers and leaders into the story of modern India.</p>
+          <p>Geography, history, faith and harvest all meet in this one small district — and it is that quiet layering, more than any single landmark, that the writers of "Glimpses of India" seem to have wanted their readers to notice.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8: Thanks -->
+    <section class="slide thanks">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <div class="thanks-mark">✦</div>
+        <h1 class="slide-title" style="max-width:none;">Thank you</h1>
+        <div class="slide-body">
+          <p>for travelling through Coorg, one slide at a time.</p>
+        </div>
+        <div class="thanks-name">Muhammad Thameem KT</div>
+        <div class="thanks-sub">NCERT Class 10 · First Flight · Chapter 5 · Glimpses of India — Coorg</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="slide-count" id="slideCount">01 / 09</div>
+
+  <footer class="bar">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const slideCount = document.getElementById('slideCount');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  // ---- Shared illustrated landscape (layered hills + mist), reused per slide with a slight hue shift ----
+  const LANDSCAPE_SVG = `
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#233d2d"/>
+          <stop offset="100%" stop-color="#12201a"/>
+        </linearGradient>
+        <linearGradient id="mistGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#A8B8A0" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#A8B8A0" stop-opacity="0.35"/>
+        </linearGradient>
+      </defs>
+      <rect width="1600" height="900" fill="url(#sky)"/>
+      <circle cx="1250" cy="190" r="70" fill="#C08A3E" opacity="0.55"/>
+      <path d="M0 620 L220 400 L420 560 L620 340 L860 540 L1080 380 L1300 560 L1600 420 L1600 900 L0 900 Z" fill="#1B2E22"/>
+      <path d="M0 700 L260 520 L500 660 L760 470 L1020 640 L1280 500 L1600 660 L1600 900 L0 900 Z" fill="#22392A" opacity="0.9"/>
+      <path d="M0 780 L300 660 L560 760 L840 620 L1120 750 L1600 640 L1600 900 L0 900 Z" fill="#2A4534"/>
+      <rect y="620" width="1600" height="280" fill="url(#mistGrad)"/>
+    </svg>
+  `;
+
+  document.querySelectorAll('.landscape-bg').forEach((el, i) => {
+    el.innerHTML = LANDSCAPE_SVG;
+    const hue = (i * 9) % 30 - 15;
+    el.style.filter = 'hue-rotate(' + hue + 'deg)';
+  });
+
+  function getOrCreateVideo(slide){
+    const src = slide.getAttribute('data-video-src');
+    if(!src) return null;
+    const holder = slide.querySelector('.bg-video');
+    if(!holder) return null;
+    let video = holder.querySelector('video');
+    if(!video){
+      video = document.createElement('video');
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('disablePictureInPicture', '');
+      video.preload = 'none';
+      video.src = src;
+      holder.appendChild(video);
+    }
+    return video;
+  }
+
+  function playSlideVideo(slide){
+    const video = getOrCreateVideo(slide);
+    if(!video) return;
+    if(video.preload === 'none') video.preload = 'auto';
+    const p = video.play();
+    if(p && p.catch) p.catch(() => { /* autoplay blocked until user interacts once; harmless */ });
+  }
+
+  function pauseSlideVideo(slide){
+    const video = slide.querySelector('.bg-video video');
+    if(video) video.pause();
+  }
+
+  function updateUI(prevIndex){
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+      s.classList.toggle('prev', i < current);
+      if(i === current){
+        playSlideVideo(s);
+      } else if(i === prevIndex){
+        pauseSlideVideo(s);
+      }
+    });
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    slideCount.textContent = pad(current + 1) + ' / ' + pad(slides.length);
+  }
+
+  function goTo(i){
+    if(i < 0 || i >= slides.length || i === current) return;
+    const prevIndex = current;
+    current = i;
+    updateUI(prevIndex);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight') goTo(current + 1);
+    if(e.key === 'ArrowLeft') goTo(current - 1);
+    if(e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+
+  // ---- Touch config: phones, tablets and touch-screen TV boxes ----
+  // A swipe only changes slides when the motion is clearly more horizontal
+  // than vertical. Anything more vertical is left alone so the page can
+  // scroll inside the active slide (e.g. to reach the video below the text).
+  let touchStartX = null, touchStartY = null;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, {passive:true});
+
+  document.addEventListener('touchend', (e) => {
+    if(touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    touchStartX = null; touchStartY = null;
+    if(Math.abs(dx) < 50) return;              // too short to count as a swipe
+    if(Math.abs(dx) < Math.abs(dy) * 1.3) return; // more vertical than horizontal -> let it scroll
+    dx < 0 ? goTo(current + 1) : goTo(current - 1);
+  }, {passive:true});
+
+  // Tap-to-play inline video (works with touch, remote "OK" click on TVs, and mouse)
+  document.querySelectorAll('.yt-embed').forEach((box) => {
+    const btn = box.querySelector('.yt-play');
+    const src = box.getAttribute('data-video-src');
+    const ytId = box.getAttribute('data-yt-id');
+    if(!btn) return;
+    btn.addEventListener('click', () => {
+      if(src){
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        box.innerHTML = '';
+        box.appendChild(video);
+        video.play().catch(() => {});
+      } else if(ytId){
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&playsinline=1&rel=0';
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+        iframe.allowFullscreen = true;
+        box.innerHTML = '';
+        box.appendChild(iframe);
+      }
+    });
+  });
+
+  // ---- Fullscreen ----
+  const appEl = document.getElementById('app');
+  const fsBtn = document.getElementById('fullscreenBtn');
+  const fsIcon = document.getElementById('fsIcon');
+  const EXPAND = '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>';
+  const COLLAPSE = '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>';
+
+  const requestFS = appEl.requestFullscreen || appEl.webkitRequestFullscreen || appEl.webkitEnterFullscreen || appEl.msRequestFullscreen;
+  const exitFS = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+  const fsSupported = !!requestFS;
+
+  function isFs(){
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+  }
+
+  function toggleFullscreen(){
+    if(!fsSupported) return;
+    if(!isFs()){
+      requestFS.call(appEl);
+    } else if(exitFS){
+      exitFS.call(document);
+    }
+  }
+  if(!fsSupported){
+    // iOS Safari and some TV browsers don't expose element fullscreen —
+    // hide the control rather than show a button that can't do anything.
+    fsBtn.style.display = 'none';
+  } else {
+    fsBtn.addEventListener('click', toggleFullscreen);
+    ['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(ev =>
+      document.addEventListener(ev, () => { fsIcon.innerHTML = isFs() ? COLLAPSE : EXPAND; })
+    );
+  }
+
+  updateUI(-1);
+})();
+</script>
+
+</body>
+</html>
