@@ -398,7 +398,7 @@
     </section>
 
     <!-- 3: Tourist Places & Adventure (background video) -->
-    <section class="slide" data-video-src="https://assets.mixkit.co/videos/41574/41574-360.mp4">
+    <section class="slide" data-video-src="https://assets.mixkit.co/videos/50847/50847-360.mp4">
       <div class="bg-video"></div>
       <div class="bg-overlay"></div>
       <div class="slide-inner">
@@ -467,6 +467,27 @@
           <p>Introduced during British rule, coffee has become the crop most associated with Coorg, grown in the shade of silver oak and orange trees across the district's slopes. Pepper vines climb the same trees, and cardamom plantations fill the valleys in between — a landscape built almost entirely on fragrance.</p>
           <p>Each spring, coffee blossoms briefly cover the estates in white, and for a few days the entire district smells of it. Coorg remains one of India's principal coffee-growing regions, and the plantations are as much a part of its identity as its rivers or its hills.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- 6b: Coffee Production -->
+    <section class="slide">
+      <div class="landscape-bg"></div>
+      <div class="bg-overlay"></div>
+      <div class="slide-inner">
+        <p class="eyebrow">How the harvest becomes the coffee</p>
+        <h1 class="slide-title">From flowering estate to processed bean</h1>
+        <div class="slide-body">
+          <p>Coffee in Coorg is grown under a canopy of taller shade trees, which keep the plants cool and protect the soil — a traditional method that also lets pepper vines and cardamom share the same land. Flowering happens after the first pre-monsoon showers, usually in March, when entire hillsides turn white for a few days.</p>
+          <p>Cherries are hand-picked once ripe, typically between November and February, then either dry-processed in the sun or wet-processed by pulping and fermenting before drying. The dried beans are hulled, graded and sent on for roasting — a slow, largely manual chain of work that still shapes the rhythm of the district's plantation communities.</p>
+        </div>
+        <div class="yt-embed" data-yt-id="Z4YZOjc_7YI">
+          <img src="https://img.youtube.com/vi/Z4YZOjc_7YI/hqdefault.jpg" alt="Video thumbnail" loading="lazy">
+          <button class="yt-play" aria-label="Play video" type="button">
+            <span class="yt-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+        </div>
+        <p class="yt-caption">Tap to play — scroll down inside this slide to reach it.</p>
       </div>
     </section>
 
@@ -644,21 +665,31 @@
   document.querySelectorAll('.yt-embed').forEach((box) => {
     const btn = box.querySelector('.yt-play');
     const src = box.getAttribute('data-video-src');
-    if(!btn || !src) return;
+    const ytId = box.getAttribute('data-yt-id');
+    if(!btn) return;
     btn.addEventListener('click', () => {
-      const video = document.createElement('video');
-      video.src = src;
-      video.controls = true;
-      video.autoplay = true;
-      video.playsInline = true;
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.style.width = '100%';
-      video.style.height = '100%';
-      video.style.objectFit = 'cover';
-      box.innerHTML = '';
-      box.appendChild(video);
-      video.play().catch(() => {});
+      if(src){
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        box.innerHTML = '';
+        box.appendChild(video);
+        video.play().catch(() => {});
+      } else if(ytId){
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&playsinline=1&rel=0';
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+        iframe.allowFullscreen = true;
+        box.innerHTML = '';
+        box.appendChild(iframe);
+      }
     });
   });
 
