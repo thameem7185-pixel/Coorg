@@ -303,33 +303,35 @@
   /* ---------- Bottom nav ---------- */
   footer.bar{
     position:absolute; bottom:0; left:0; right:0; z-index:30;
-    padding:20px 28px calc(26px + env(safe-area-inset-bottom));
-    display:flex; align-items:center; justify-content:center; gap:22px;
+    padding:6px 20px calc(6px + env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center; gap:14px;
     background:linear-gradient(0deg, rgba(18,32,26,0.85), rgba(18,32,26,0));
   }
   .nav-btn{
-    background:none; border:1px solid rgba(237,230,214,0.35); color:var(--cream);
-    width:50px;height:50px; border-radius:50%;
+    background:none; border:none; color:var(--cream);
+    width:22px;height:22px; border-radius:0;
     display:flex;align-items:center;justify-content:center; cursor:pointer;
-    font-size:1.25rem;
-    transition:background .2s ease, transform .15s cubic-bezier(.22,1,.36,1);
+    font-size:1rem; line-height:1;
+    opacity:0.75;
+    transition:opacity .2s ease, transform .15s cubic-bezier(.22,1,.36,1);
     will-change:transform;
     touch-action:manipulation;
     flex-shrink:0;
+    padding:0;
   }
-  .nav-btn:hover, .nav-btn:focus-visible{background:rgba(237,230,214,0.14); transform:scale(1.06);}
-  .nav-btn:active{transform:scale(0.94);}
-  .dots{display:flex; gap:6px;}
+  .nav-btn:hover, .nav-btn:focus-visible{opacity:1;}
+  .nav-btn:active{transform:scale(0.9);}
+  .dots{display:flex; gap:5px;}
   .dot{
-    width:8px;height:8px;border-radius:50%;
+    width:5px;height:5px;border-radius:50%;
     background:rgba(237,230,214,0.3); cursor:pointer;
     transition:background .25s ease, width .25s cubic-bezier(.22,1,.36,1);
-    padding:14px 5px;
+    padding:8px 3px;
     background-clip:content-box;
     box-sizing:content-box;
     touch-action:manipulation;
   }
-  .dot.active{background:var(--gold); width:22px; border-radius:5px;}
+  .dot.active{background:var(--gold); width:14px; border-radius:4px;}
 
   .slide-count{
     position:absolute; bottom:26px; right:28px;
@@ -341,7 +343,6 @@
     .brand-top span{font-size:0.92rem;}
     .brand .meta{font-size:0.62rem;}
     .slide{padding:104px 6vw 84px;}
-    footer.bar{gap:14px;}
     .slide-count{display:none;}
   }
 
