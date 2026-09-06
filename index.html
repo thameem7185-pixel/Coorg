@@ -142,6 +142,21 @@
     margin-top:auto;
     margin-bottom:auto;
   }
+  /* Slides that carry a tap-to-play video below their text: the video
+     stretches down to the bottom of the slide instead of leaving a
+     dead black gap under a fixed-height box. */
+  .slide-inner:has(.fill-video){
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    margin-top:0;
+    margin-bottom:0;
+  }
+  .yt-embed.fill-video{
+    flex:1 1 auto;
+    aspect-ratio:auto;
+    min-height:200px;
+  }
   .eyebrow{
     color:var(--gold);
     font-size:0.82rem;
@@ -416,7 +431,7 @@
           <div class="chip"><p class="chip-title">Dubare Elephant Camp</p><p class="chip-desc">A riverside camp on the Kaveri where forest elephants are trained and bathed.</p></div>
           <div class="chip"><p class="chip-title">Mandalpatti &amp; Tadiandamol</p><p class="chip-desc">A jeep-track viewpoint and Coorg's highest peak, both popular treks.</p></div>
         </div>
-        <div class="yt-embed" data-video-src="assets/coorg-trails.mp4">
+        <div class="yt-embed fill-video" data-video-src="assets/coorg-trails.mp4">
           <button class="yt-play" aria-label="Play video" type="button">
             <span class="yt-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
           </button>
@@ -481,8 +496,7 @@
           <p>Coffee in Coorg is grown under a canopy of taller shade trees, which keep the plants cool and protect the soil — a traditional method that also lets pepper vines and cardamom share the same land. Flowering happens after the first pre-monsoon showers, usually in March, when entire hillsides turn white for a few days.</p>
           <p>Cherries are hand-picked once ripe, typically between November and February, then either dry-processed in the sun or wet-processed by pulping and fermenting before drying. The dried beans are hulled, graded and sent on for roasting — a slow, largely manual chain of work that still shapes the rhythm of the district's plantation communities.</p>
         </div>
-        <div class="yt-embed" data-yt-id="Z4YZOjc_7YI">
-          <img src="https://img.youtube.com/vi/Z4YZOjc_7YI/hqdefault.jpg" alt="Video thumbnail" loading="lazy">
+        <div class="yt-embed fill-video" data-video-src="assets/bean-to-brew.mp4">
           <button class="yt-play" aria-label="Play video" type="button">
             <span class="yt-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
           </button>
