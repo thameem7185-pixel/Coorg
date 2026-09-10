@@ -12,9 +12,9 @@
   :root{
     --cream:#F4EFE6;
     --cream-soft:#E8DEC8;
-    --burgundy:#3A171F;
-    --burgundy-deep:#220D12;
-    --rose-tint:#8C4753;
+    --burgundy:#1F3D2E;
+    --burgundy-deep:#12241A;
+    --rose-tint:#6E9C7D;
     --gold:#D4A359;
     --max-w:920px;
   }
@@ -45,7 +45,7 @@
     align-items:center;
     justify-content:space-between;
     padding:calc(16px + env(safe-area-inset-top)) 28px 16px;
-    background:linear-gradient(180deg, rgba(34,13,18,0.88), rgba(34,13,18,0));
+    background:linear-gradient(180deg, rgba(18,36,26,0.88), rgba(18,36,26,0));
     position:absolute;
     top:0; left:0; right:0;
     z-index:30;
@@ -131,7 +131,7 @@
     position:absolute;
     inset:0;
     z-index:1;
-    background:linear-gradient(180deg, rgba(34,13,18,0.5) 0%, rgba(34,13,18,0.68) 55%, rgba(34,13,18,0.9) 100%);
+    background:linear-gradient(180deg, rgba(18,36,26,0.5) 0%, rgba(18,36,26,0.68) 55%, rgba(18,36,26,0.9) 100%);
   }
 
   .slide-inner{
@@ -195,7 +195,7 @@
     border:1px solid rgba(244,239,230,0.3);
     border-radius:999px;
     padding:7px 16px;
-    background:rgba(34,13,18,0.4);
+    background:rgba(18,36,26,0.4);
   }
 
   .yt-embed{
@@ -219,13 +219,13 @@
   .yt-play{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
-    background:rgba(34,13,18,0.25);
+    background:rgba(18,36,26,0.25);
     cursor:pointer;
     border:none; padding:0;
   }
   .yt-play .yt-play-circle{
     width:64px;height:64px;border-radius:50%;
-    background:rgba(34,13,18,0.7);
+    background:rgba(18,36,26,0.7);
     border:1px solid rgba(244,239,230,0.5);
     display:flex;align-items:center;justify-content:center;
     transition:transform .15s cubic-bezier(.22,1,.36,1);
@@ -236,7 +236,7 @@
 
   .video-badge{
     display:inline-flex; align-items:center; gap:8px;
-    background:rgba(34,13,18,0.55);
+    background:rgba(18,36,26,0.55);
     border:1px solid rgba(244,239,230,0.25);
     padding:6px 12px 6px 8px;
     border-radius:999px;
@@ -262,7 +262,7 @@
     max-width:64ch;
   }
   .chip{
-    background:rgba(34,13,18,0.42);
+    background:rgba(18,36,26,0.42);
     border:1px solid rgba(244,239,230,0.18);
     border-radius:12px;
     padding:12px 14px;
@@ -430,7 +430,7 @@
     margin-top:10px;
   }
   .qa-item{
-    background:rgba(34,13,18,0.42);
+    background:rgba(18,36,26,0.42);
     border:1px solid rgba(244,239,230,0.18);
     border-radius:12px;
     padding:14px 16px;
@@ -827,19 +827,19 @@
     <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3A171F"/>
-          <stop offset="100%" stop-color="#220D12"/>
+          <stop offset="0%" stop-color="#1F3D2E"/>
+          <stop offset="100%" stop-color="#12241A"/>
         </linearGradient>
         <linearGradient id="mistGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#8C4753" stop-opacity="0"/>
-          <stop offset="100%" stop-color="#8C4753" stop-opacity="0.35"/>
+          <stop offset="0%" stop-color="#6E9C7D" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#6E9C7D" stop-opacity="0.35"/>
         </linearGradient>
       </defs>
       <rect width="1600" height="900" fill="url(#sky)"/>
       <circle cx="1250" cy="190" r="70" fill="#D4A359" opacity="0.55"/>
-      <path d="M0 620 L220 400 L420 560 L620 340 L860 540 L1080 380 L1300 560 L1600 420 L1600 900 L0 900 Z" fill="#2C1218"/>
-      <path d="M0 700 L260 520 L500 660 L760 470 L1020 640 L1280 500 L1600 660 L1600 900 L0 900 Z" fill="#351820" opacity="0.9"/>
-      <path d="M0 780 L300 660 L560 760 L840 620 L1120 750 L1600 640 L1600 900 L0 900 Z" fill="#422029"/>
+      <path d="M0 620 L220 400 L420 560 L620 340 L860 540 L1080 380 L1300 560 L1600 420 L1600 900 L0 900 Z" fill="#152B1E"/>
+      <path d="M0 700 L260 520 L500 660 L760 470 L1020 640 L1280 500 L1600 660 L1600 900 L0 900 Z" fill="#1B3625" opacity="0.9"/>
+      <path d="M0 780 L300 660 L560 760 L840 620 L1120 750 L1600 640 L1600 900 L0 900 Z" fill="#25422F"/>
       <rect y="620" width="1600" height="280" fill="url(#mistGrad)"/>
     </svg>
   `;
